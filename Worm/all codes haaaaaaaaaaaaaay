@@ -1,0 +1,108 @@
+Html;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <script src="script.js"></script>
+</body>
+</html>
+-----------------
+CSS;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f3f3f3;
+}
+
+#gameCanvas {
+    background-color: #eaeaea;
+    border: 2px solid #8e44ad; /* لون بنفسجي */
+}
+-----
+JAVA;
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+canvas.width = 400;
+canvas.height = 400;
+
+const snakeColor = "#8e44ad"; // اللون البنفسجي
+const snakeSize = 20;
+let snake = [{ x: 100, y: 100 }];
+let direction = { x: snakeSize, y: 0 };
+let food = { x: 200, y: 200 };
+
+function drawRect(x, y, size, color) {
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y, size, size);
+}
+
+function drawSnake() {
+    snake.forEach(segment => drawRect(segment.x, segment.y, snakeSize, snakeColor));
+}
+
+function moveSnake() {
+    const newHead = {
+        x: snake[0].x + direction.x,
+        y: snake[0].y + direction.y
+    };
+    snake.unshift(newHead);
+    snake.pop();
+}
+
+function drawFood() {
+    drawRect(food.x, food.y, snakeSize, 'red');
+}
+
+function randomFood() {
+    food.x = Math.floor(Math.random() * (canvas.width / snakeSize)) * snakeSize;
+    food.y = Math.floor(Math.random() * (canvas.height / snakeSize)) * snakeSize;
+}
+
+function checkCollision() {
+    if (snake[0].x === food.x && snake[0].y === food.y) {
+        snake.push({}); // زيادة طول الثعبان
+        randomFood();
+    }
+}
+
+function gameLoop() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawSnake();
+    moveSnake();
+    drawFood();
+    checkCollision();
+}
+
+setInterval(gameLoop, 100);
+
+window.addEventListener('keydown', (e) => {
+    switch (e.key) {
+        case 'ArrowUp':
+            direction = { x: 0, y: -snakeSize };
+            break;
+        case 'ArrowDown':
+            direction = { x: 0, y: snakeSize };
+            break;
+        case 'ArrowLeft':
+            direction = { x: -snakeSize, y: 0 };
+            break;
+        case 'ArrowRight':
+            direction = { x: snakeSize, y: 0 };
+            break;
+    }
+});
